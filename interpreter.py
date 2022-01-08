@@ -8,7 +8,7 @@ class Token:
         self.type = type
         self.value = value
 
-    def __str__(self):
+    def __repr__(self):
         '''
         String representation of an object.
         '''
@@ -26,6 +26,12 @@ class Interpreter:
         self.pos = 0
         self.curent_token = None
 
+    def error(self):
+        '''
+        Raises parsing error.
+        '''
+        raise Exception('Error parsing input')
+
     def get_next_token(self):
         '''
         Tokenizer (AKA scanner or lexical analyzer).
@@ -34,11 +40,32 @@ class Interpreter:
         '''
         text = self.text
 
+        # Reached end of file
+        if self.pos > len(text) - 1:
+            return Token(EOF, None)
+
+        current_char = text[self.pos]
+
+        if current_char.isdigit():
+            token = Token(INTEGER, int(current_char))
+            self.pos += 1
+            return token
+
+        elif current_char == '+':
+            token = Token(PLUS, '+')
+            self.pos += 1
+            return token
+
+        else:
+            self.error()
+
 
     def expr(self):
         '''
         Returns the text and returns the expression.
         '''
+        self.curent_token = self.get_next_token()
+
         return self.text
 
 
