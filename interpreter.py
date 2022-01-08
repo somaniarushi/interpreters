@@ -59,6 +59,16 @@ class Interpreter:
         else:
             self.error()
 
+    def eat(self, token_type):
+        '''
+        If the current token matches the passed in
+        token type, eat it and update self.current_token
+        Otherwise, raise error.
+        '''
+        if self.curent_token.type == token_type:
+            self.curent_token = self.get_next_token()
+        else:
+            self.error()
 
     def expr(self):
         '''
@@ -66,7 +76,17 @@ class Interpreter:
         '''
         self.curent_token = self.get_next_token()
 
-        return self.text
+        left = self.curent_token
+        self.eat(INTEGER)
+
+        op = self.curent_token
+        self.eat(PLUS)
+
+        right = self.curent_token
+        self.eat(INTEGER)
+
+        result = left.value + right.value
+        return result
 
 
 def main():
