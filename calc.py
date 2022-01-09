@@ -24,7 +24,7 @@ class Interpreter:
         '''
         self.text = text
         self.pos = 0
-        self.curent_token = None
+        self.current_token = None
         self.current_char = self.text[self.pos]
 
     def error(self):
@@ -105,33 +105,39 @@ class Interpreter:
         token type, eat it and update self.current_token
         Otherwise, raise error.
         '''
-        if self.curent_token.type == token_type:
-            self.curent_token = self.get_next_token()
+        if self.current_token.type == token_type:
+            self.current_token = self.get_next_token()
         else:
             self.error()
+
+    def term(self):
+        '''
+        Returns the INTEGER token value that is current_token and
+        eats the current_token
+        '''
+        token = self.current_token
+        self.eat(INTEGER)
+        return token.value
 
     def expr(self):
         '''
         Returns the text and returns the expression.
         '''
-        self.curent_token = self.get_next_token()
+        self.current_token = self.get_next_token()
+        result = self.term()
 
-        left = self.curent_token
-        self.eat(INTEGER)
+        while self.current_token.type in (PLUS, MINUS):
+            token = self.current_token
+            if token.type == PLUS:
+                self.eat(PLUS)
+                result = result + self.term()
+            elif token.type == MINUS:
+                self.eat(MINUS)
+                result = result - self.term()
 
-        op = self.curent_token
-        if op.type == PLUS:
-            self.eat(PLUS)
-        else:
-            self.eat(MINUS)
+        # if self.current_token.type != EOF:
+        #   self.error()
 
-        right = self.curent_token
-        self.eat(INTEGER)
-
-        if op.type == PLUS:
-            result = left.value + right.value
-        else:
-            result = left.value - right.value
         return result
 
 
