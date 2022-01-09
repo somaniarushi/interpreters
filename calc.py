@@ -1,4 +1,4 @@
-INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS', 'EOF'
+INTEGER, PLUS, MINUS, MUL, DIV, EOF = 'INTEGER', 'PLUS', 'MUL', 'DIV', 'MINUS', 'EOF'
 
 class Token:
     def __init__(self, type, value):
@@ -14,17 +14,15 @@ class Token:
         '''
         return f'Token({self.type}, {self.value})'
 
-
-class Interpreter:
+class Lexer:
     def __init__(self, text):
         '''
         Accepts a string input from the client as text,
-        and maintains an index into text and the
+        and maintains an index into text, the current char and the
         current token instance.
         '''
         self.text = text
         self.pos = 0
-        self.current_token = None
         self.current_char = self.text[self.pos]
 
     def error(self):
@@ -94,10 +92,30 @@ class Interpreter:
                 self.advance()
                 return token
 
+            elif self.current_char == '*':
+                self.advance()
+                return Token(MUL, '*')
+
+            elif self.current_char == '/':
+                self.advance()
+                return Token(DIV, '/')
+
             else:
                 self.error()
 
         return Token(EOF, None)
+
+
+
+class Interpreter:
+    def __init__(self, lexer):
+        '''
+        Accepts a string input from the client as text,
+        and maintains an index into text and the
+        current token instance.
+        '''
+        self.lexer = lexer
+        self.current_token = self.lexer.get_next_token()
 
     def eat(self, token_type):
         '''
@@ -106,14 +124,16 @@ class Interpreter:
         Otherwise, raise error.
         '''
         if self.current_token.type == token_type:
-            self.current_token = self.get_next_token()
+            self.current_token = self.lexer.get_next_token()
         else:
             self.error()
 
-    def term(self):
+    def factor(self):
         '''
-        Returns the INTEGER token value that is current_token and
+        Returns the factor token value that is current_token and
         eats the current_token
+
+        factor: INTEGER
         '''
         token = self.current_token
         self.eat(INTEGER)
@@ -121,25 +141,31 @@ class Interpreter:
 
     def expr(self):
         '''
-        Returns the text and returns the expression.
-        '''
-        self.current_token = self.get_next_token()
-        result = self.term()
+        Parses the text and returns the expression.
 
-        while self.current_token.type in (PLUS, MINUS):
+        expr: factor ((MUL | DIV) | (ADD | SUB) factor)*
+        factor: INTEGER
+        '''
+        result = self.factor()
+
+        while self.current_token.type in (PLUS, MINUS, MUL, DIV):
             token = self.current_token
             if token.type == PLUS:
                 self.eat(PLUS)
-                result = result + self.term()
+                result = result + self.factor()
             elif token.type == MINUS:
                 self.eat(MINUS)
-                result = result - self.term()
+                result = result - self.factor()
 
-        # if self.current_token.type != EOF:
-        #   self.error()
+            if token.type == MUL:
+                self.eat(MUL)
+                result = result * self.factor()
+
+            elif token.type == DIV:
+                self.eat(DIV)
+                result = result / self.factor()
 
         return result
-
 
 def main():
     while True:
@@ -149,7 +175,7 @@ def main():
             break
         if not text:
             continue
-        interpreter = Interpreter(text)
+        interpreter = Interpreter(Lexer(text))
         result = interpreter.expr()
         print(result)
 
