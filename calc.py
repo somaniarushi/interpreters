@@ -203,6 +203,9 @@ def main():
             break
         if not text:
             continue
+        if text == 'quit':
+            print('pyscal says bye!')
+            break
         interpreter = Interpreter(Lexer(text))
         result = interpreter.expr()
         print(result)
