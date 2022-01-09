@@ -206,9 +206,13 @@ def main():
         if text == 'quit':
             print('pyscal says bye!')
             break
-        interpreter = Interpreter(Lexer(text))
-        result = interpreter.expr()
-        print(result)
+        try:
+            interpreter = Interpreter(Lexer(text))
+            result = interpreter.expr()
+            print(result)
+        except Exception:
+            print('Syntax error on line 1 | Exiting pyscal...')
+            break
 
 if __name__ == '__main__':
     main()
