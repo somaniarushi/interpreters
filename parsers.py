@@ -58,6 +58,9 @@ class Parser:
         else:
             self.error()
 
+    def error(self):
+        raise Exception('Invalid syntax')
+
     def parse(self):
         root = self.program()
         if self.current_token.type != EOF:
@@ -182,9 +185,11 @@ class Parser:
         elif token.type == PLUS:
             self.eat(PLUS)
             node = UnaryOp(token, self.factor())
+            return node
         elif token.type == MINUS:
-            self.ear(MINUS)
+            self.eat(MINUS)
             node = UnaryOp(token, self.factor())
+            return node
         elif token.type == LPAREN:
             self.eat(LPAREN)
             node = self.expr()
@@ -192,5 +197,4 @@ class Parser:
             return node
         elif token.type == ID:
             node = self.variable()
-            self.eat(ID)
             return node
