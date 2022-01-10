@@ -14,6 +14,14 @@ class Token:
         '''
         return f'Token({self.type}, {self.value})'
 
+'''
+Keywords that are built-in and therefore cannot be made variables.
+'''
+RESERVED_KEYWORDS = {
+    'BEGIN': Token('BEGIN', 'BEGIN'),
+    'END': Token('END', 'END'),
+}
+
 class Lexer:
     def __init__(self, text):
         '''
@@ -51,6 +59,29 @@ class Lexer:
         # the end of the file
         while self.current_char is not None and self.current_char.isspace():
             self.advance()
+
+    def peek(self):
+        '''
+        Returns the next element of the input buffer,
+        or None if EOF.
+        '''
+        peek_pos = self.pos + 1
+        if peek_pos > len(self.text) - 1:
+            return None
+        else:
+            return self.text[peek_pos]
+
+    def _id(self):
+        '''
+        Handles identifiers and reserved keywords.
+        '''
+        result = ''
+        while self.current_char is not None and self.current_char.isalnum():
+            result += self.current_char
+            self.advance()
+        token = RESERVED_KEYWORDS.get(result, Token(ID, result))
+        return token
+
 
     def integer(self):
         '''
@@ -107,6 +138,22 @@ class Lexer:
             elif self.current_char == ')':
                 self.advance()
                 return Token(RPAREN, ')')
+
+            elif self.current_char.isalpha():
+                return self._id()
+
+            elif self.current_char == ':' and self.peek() == '=':
+                self.advance()
+                self.advance()
+                return Token(ASSIGN, ':=')
+
+            elif self.current_char == ';':
+                self.advance()
+                return Token(SEMI, ';')
+
+            elif self.current_char == '.':
+                self.advance()
+                return Token(DOT, '.')
 
             else:
                 self.error()
