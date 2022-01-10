@@ -1,7 +1,16 @@
 % This is a grammar file for reference
 % It is not used in the project
 
-?start: expr
+?start: program
+
+program: compound_statement DOT
+compount_statement: BEGIN statement_list END
+statement_list: statement | statement SEMI statement_list
+statement: compound_statement | assignment_statement | empty
+assignment_statement: variable ASSIGN expr
+variable: ID
+empty:
+
 expr: term ((PLUS | MINUS)  term)*
 term: factor ((MUL | DIV) factor)*
-factor (PLUS | MINUS) factor | INTEGER | LPAREN expr RPAREN
+factor PLUS factor | MINUS factor | INTEGER | LPAREN expr RPAREN | variable
