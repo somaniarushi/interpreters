@@ -7,4 +7,5 @@ In this repository, you will find:
   - associativity and precedence support
   - parenthetical expression support
   - basic error handling with `quit` instruction
+- AST support!
 -
