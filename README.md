@@ -6,6 +6,8 @@ In this repository, you will find:
   - addition, subtraction, multiplication and division support with integers
   - associativity and precedence support
   - parenthetical expression support
+  - unary operation support
   - basic error handling with `quit` instruction
 - AST support!
   - Lexer -> Parser -> Interpreter pipeline
+
