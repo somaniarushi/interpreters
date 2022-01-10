@@ -1,0 +1,7 @@
+% This is a grammar file for reference
+% It is not used in the project
+
+?start: expr
+expr: term ((PLUS | MINUS)  term)*
+term: factor ((MUL | DIV) factor)*
+factor (PLUS | MINUS) factor | INTEGER | LPAREN expr RPAREN
