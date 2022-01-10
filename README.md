@@ -8,4 +8,4 @@ In this repository, you will find:
   - parenthetical expression support
   - basic error handling with `quit` instruction
 - AST support!
--
+  - Lexer -> Parser -> Interpreter pipeline
