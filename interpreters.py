@@ -1,4 +1,6 @@
+from ctypes.wintypes import FLOAT
 from constants import *
+from parsers import Block
 
 class NodeVisitor:
     def visit(self, node):
@@ -14,6 +16,24 @@ class Interpreter(NodeVisitor):
     def __init__(self, parser):
         self.parser = parser
         self.GLOBAL_SCOPE = {}
+
+    def interpret(self):
+        tree = self.parser.parse()
+        return self.visit(tree)
+
+    def visit_Program(self, node):
+        self.visit(node.block)
+
+    def visit_Block(self, node):
+        for declaration in node.declarations:
+            self.visit(declaration)
+        self.visit(node.compound_statement)
+
+    def visit_VarDecl(self, node):
+        pass
+
+    def visit_Type(self, node):
+        pass
 
     def visit_Compound(self, node):
         for child in node.children:
@@ -42,8 +62,10 @@ class Interpreter(NodeVisitor):
             return self.visit(node.left) - self.visit(node.right)
         elif node.op.type == MUL:
             return self.visit(node.left) * self.visit(node.right)
-        elif node.op.type == DIV:
+        elif node.op.type == INTEGER_DIV:
             return self.visit(node.left) // self.visit(node.right)
+        elif node.op.type == FLOAT_DIV:
+            return self.visit(node.left) / self.visit(node.right)
 
     def visit_UnaryOp(self, node):
         op = node.op.type
@@ -54,7 +76,3 @@ class Interpreter(NodeVisitor):
 
     def visit_Num(self, node):
         return node.value
-
-    def interpret(self):
-        tree = self.parser.parse()
-        return self.visit(tree)
