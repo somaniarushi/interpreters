@@ -10,5 +10,7 @@ In this repository, you will find:
   - basic error handling with `quit` instruction
 - AST support!
   - Lexer -> Parser -> Interpreter pipeline
--
+- a Pascal interpreter split across  `lexer.py`, `parser.py` and `interpreter.py`
+  - Grammar defined by `grammar.lark`
+  - Example cases in `inputs/`
 

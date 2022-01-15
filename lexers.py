@@ -18,9 +18,15 @@ class Token:
 Keywords that are built-in and therefore cannot be made variables.
 '''
 RESERVED_KEYWORDS = {
+    'PROGRAM': Token('PROGRAM', 'PROGRAM'),
+    'VAR': Token('VAR', 'VAR'),
+    'DIV': Token('INTEGER_DIV', 'DIV'),
+    'INTEGER': Token('INTEGER', 'INTEGER'),
+    'REAL': Token('REAL', 'REAL'),
     'BEGIN': Token('BEGIN', 'BEGIN'),
     'END': Token('END', 'END'),
 }
+
 
 class Lexer:
     def __init__(self, text):
@@ -37,7 +43,7 @@ class Lexer:
         '''
         Raises parsing error.
         '''
-        raise Exception('Error parsing input')
+        raise Exception('Invalid character')
 
     def advance(self):
         '''
@@ -59,6 +65,17 @@ class Lexer:
         # the end of the file
         while self.current_char is not None and self.current_char.isspace():
             self.advance()
+
+    def skip_comment(self):
+        '''
+        Assumes that an opening curly bracket has been found
+        and advances pointer to blosing curly bracket
+        '''
+        while self.current_char != '}':
+            if self.current_char is None:
+                self.error()
+            self.advance()
+        self.advance() # skipping the closing curly brace as well
 
     def peek(self):
         '''
@@ -83,16 +100,29 @@ class Lexer:
         return token
 
 
-    def integer(self):
+    def number(self):
         '''
-        Return the integer consumed from the input.
+        Return the number consumed from the input — multi-digit integer or float.
         The pointer and current_char is updated
         '''
         result = ''
         while self.current_char is not None and self.current_char.isdigit():
             result += self.current_char
             self.advance()
-        return int(result)
+
+        if self.current_char == '.': # float
+            result += self.current_char
+            self.advance()
+
+            while self.current_char is not None and self.current_char.isdigit():
+                result += self.current_char
+                self.advance()
+
+            token = Token('REAL_CONST', float(result))
+        else: # integer
+            token = Token('INTEGER_CONST', int(result))
+
+        return token
 
     def get_next_token(self):
         '''
@@ -105,52 +135,79 @@ class Lexer:
 
             current_char = self.current_char
 
+            # whitespace
             if current_char.isspace():
                 self.skip_whitespace()
                 continue
 
-            elif current_char.isdigit():
-                token = Token(INTEGER, self.integer())
-                return token
+            # comment
+            elif current_char == '{':
+                self.advance() # TODO: is this necessary
+                self.skip_comment()
+                continue
 
-            elif current_char == '+':
-                token = Token(PLUS, '+')
-                self.advance()
-                return token
-
-            elif current_char == '-':
-                token = Token(MINUS, '-')
-                self.advance()
-                return token
-
-            elif self.current_char == '*':
-                self.advance()
-                return Token(MUL, '*')
-
-            elif self.current_char == '/':
-                self.advance()
-                return Token(DIV, '/')
-
-            elif self.current_char == '(':
-                self.advance()
-                return Token(LPAREN, '(')
-
-            elif self.current_char == ')':
-                self.advance()
-                return Token(RPAREN, ')')
-
+            # keyword
             elif self.current_char.isalpha():
                 return self._id()
 
+            # number
+            elif current_char.isdigit():
+                return self.number()
+
+            # assignment operator
             elif self.current_char == ':' and self.peek() == '=':
                 self.advance()
                 self.advance()
                 return Token(ASSIGN, ':=')
 
+            # semi-colon
             elif self.current_char == ';':
                 self.advance()
                 return Token(SEMI, ';')
 
+            # colon
+            elif self.current_char == ':':
+                self.advance()
+                return Token(COLON, ':')
+
+            # comma
+            elif self.current_char == ',':
+                self.advance()
+                return Token(COMMA, ',')
+
+            # plus
+            elif current_char == '+':
+                token = Token(PLUS, '+')
+                self.advance()
+                return token
+
+            # minus
+            elif current_char == '-':
+                token = Token(MINUS, '-')
+                self.advance()
+                return token
+
+            # multiply
+            elif self.current_char == '*':
+                self.advance()
+                return Token(MUL, '*')
+
+            # float division
+            elif self.current_char == '/':
+                self.advance()
+                return Token(FLOAT_DIV, '/')
+
+            # lparen
+            elif self.current_char == '(':
+                self.advance()
+                return Token(LPAREN, '(')
+
+            # rparen
+            elif self.current_char == ')':
+                self.advance()
+                return Token(RPAREN, ')')
+
+            # dot
             elif self.current_char == '.':
                 self.advance()
                 return Token(DOT, '.')
