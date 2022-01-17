@@ -3,7 +3,7 @@ import networkx as nx
 import random
 
 from interpreters import NodeVisitor
-from viztools import Num
+from visualizer.viztools import Num
 
 class ASTVisualizer(NodeVisitor):
     def __init__(self, parser):

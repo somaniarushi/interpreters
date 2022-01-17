@@ -2,8 +2,8 @@ from constants import *
 from lexers import Lexer
 from parsers import Parser
 from interpreters import Interpreter
-from visualizer import ASTVisualizer
-from viztools import VizParser, VizLexer
+from visualizer.visualizer import ASTVisualizer
+from visualizer.viztools import VizParser, VizLexer
 
 
 def main():
@@ -13,8 +13,6 @@ def main():
     if len(sys.argv) > 2:
         if sys.argv[2] == '--visualize':
             visualize = True
-
-
 
     if visualize:
         lexer = VizLexer(text)
