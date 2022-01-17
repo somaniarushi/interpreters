@@ -1,7 +1,7 @@
-from constants import *
-from lexers import Lexer
-from parsers import Parser
-from interpreters import Interpreter
+from pascal.constants import *
+from pascal.lexers import Lexer
+from pascal.parsers import Parser
+from pascal.interpreters import Interpreter
 from visualizer.visualizer import ASTVisualizer
 from visualizer.viztools import VizParser, VizLexer
 

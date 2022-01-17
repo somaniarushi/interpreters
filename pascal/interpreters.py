@@ -1,6 +1,6 @@
 from ctypes.wintypes import FLOAT
-from constants import *
-from parsers import Block
+from pascal.constants import *
+from pascal.parsers import Block
 
 class NodeVisitor:
     def visit(self, node):

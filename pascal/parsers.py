@@ -1,5 +1,5 @@
 from ctypes.wintypes import FLOAT
-from constants import *
+from pascal.constants import *
 
 ####################### Classes #########################
 

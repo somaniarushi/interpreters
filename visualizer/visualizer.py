@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import random
 
-from interpreters import NodeVisitor
+from pascal.interpreters import NodeVisitor
 from visualizer.viztools import Num
 
 class ASTVisualizer(NodeVisitor):
