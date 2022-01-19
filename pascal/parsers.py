@@ -50,6 +50,11 @@ class VarDecl(AST):
         self.var_node = var_node
         self.type_node = type_node
 
+class ProcedureDecl(AST):
+    def __init__(self, name, block):
+        self.name = name
+        self.block = block
+
 class Block(AST):
     def __init__(self, declarations, compound_statement):
         self.declarations = declarations
@@ -122,6 +127,15 @@ class Parser:
                 var_decl = self.variable_declaration()
                 declarations.extend(var_decl)
                 self.eat(SEMI)
+
+        while self.current_token.type == PROCEDURE:
+            self.eat(PROCEDURE)
+            name = self.current_token.value
+            self.eat(ID)
+            self.eat(SEMI)
+            declarations.append(ProcedureDecl(name, self.block()))
+            self.eat(SEMI)
+
         return declarations
 
     def variable_declaration(self):

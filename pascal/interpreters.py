@@ -30,6 +30,9 @@ class Interpreter(NodeVisitor):
             self.visit(declaration)
         self.visit(node.compound_statement)
 
+    def visit_ProcedureDecl(self, node):
+        pass
+
     def visit_VarDecl(self, node):
         pass
 
@@ -92,6 +95,9 @@ class SymbolTableBuilder(NodeVisitor):
         for declaration in node.declarations:
             self.visit(declaration)
         self.visit(node.compound_statement)
+
+    def visit_ProcedureDecl(self, node):
+        pass
 
     def visit_VarDecl(self, node):
         type_name = node.type_node.value
